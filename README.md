@@ -126,7 +126,7 @@ Create a payment checkout session for the order ID you just copied.
   }
 ## OUTPUT
 * **Expected Response (JSON):**
-  ```
+  ```json
   {
     "clientSecret": "cs_test_a1b2c3d4_secret_...",
     "sessionId": "cs_test_a1b2c3d4..."
