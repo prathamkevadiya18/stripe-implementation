@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stripe Checkout Elements Test</title>
+  <!-- Stripe.js SDK (Dahlia Release) -->
+  <script src="https://js.stripe.com/dahlia/stripe.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #334155;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 500px;
+      width: 100%;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
+    h2 {
+      margin-top: 0;
+      color: #0f172a;
+      text-align: center;
+      font-size: 24px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #4f46e5;
+    }
+    #payment-element {
+      margin-top: 30px;
+      min-height: 150px;
+    }
+    #payBtn {
+      margin-top: 20px;
+      background-color: #10b981;
+      display: none; /* Hidden until element is loaded */
+    }
+    #payBtn:hover {
+      background-color: #059669;
+    }
+    .info {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 15px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Stripe Elements Tester</h2>
+    
+    <!-- Input credentials -->
+    <div class="form-group">
+      <label for="publishableKey">Stripe Publishable Key (pk_test_...)</label>
+      <input type="text" id="publishableKey" placeholder="Enter your pk_test_...">
+    </div>
+
+    <div class="form-group">
+      <label for="customerEmail">Customer Email (Required to confirm)</label>
+      <input type="email" id="customerEmail" placeholder="Enter customer email address" value="test-customer@example.com">
+    </div>
+
+    <div class="form-group">
+      <label for="clientSecret">Client Secret (from Postman)</label>
+      <input type="text" id="clientSecret" placeholder="Enter clientSecret received from Postman API">
+    </div>
+
+    <button id="loadBtn" onclick="startCheckout()">Load Payment Form</button>
+
+    <!-- Stripe Payment Element yaha load hoga -->
+    <div id="payment-element"></div>
+
+    <!-- Pay Button -->
+    <button id="payBtn">Pay Now</button>
+
+    <div class="info">
+      Test card number to use: <strong>4242 4242 4242 4242</strong>
+    </div>
+  </div>
+
+  <script>
+    let checkoutInstance = null;
+    let confirmAction = null;
+
+    async function startCheckout() {
+      const pubKey = document.getElementById('publishableKey').value.trim();
+      const secret = document.getElementById('clientSecret').value.trim();
+
+      if (!pubKey || !secret) {
+        alert("Please enter both Stripe Publishable Key and Client Secret!");
+        return;
+      }
+
+      document.getElementById('loadBtn').disabled = true;
+      document.getElementById('loadBtn').innerText = 'Initializing SDK...';
+
+      try {
+        const stripe = Stripe(pubKey);
+
+        // 1. Initialize Checkout Elements SDK for ui_mode: 'elements'
+        checkoutInstance = await stripe.initCheckoutElementsSdk({
+          clientSecret: secret
+        });
+
+        // 2. Create and Mount Payment Element
+        const paymentElement = checkoutInstance.createPaymentElement();
+        paymentElement.mount('#payment-element');
+
+        document.getElementById('loadBtn').innerText = 'Payment Form Loaded';
+
+        // 3. Load Actions for confirmation
+        const result = await checkoutInstance.loadActions();
+        if (result.type === 'success') {
+          confirmAction = result.actions.confirm;
+          
+          // Show Pay button
+          const payBtn = document.getElementById('payBtn');
+          payBtn.style.display = 'block';
+          payBtn.onclick = async () => {
+            payBtn.disabled = true;
+            payBtn.innerText = 'Processing Payment...';
+            
+            const email = document.getElementById('customerEmail').value.trim();
+            const { error } = await confirmAction({ email: email });
+            if (error) {
+              alert("Payment Failed: " + error.message);
+              payBtn.disabled = false;
+              payBtn.innerText = 'Pay Now';
+            }
+          };
+        } else {
+          alert("Failed to load Stripe confirmation actions.");
+        }
+      } catch (error) {
+        alert("Stripe Error: " + error.message);
+        document.getElementById('loadBtn').disabled = false;
+        document.getElementById('loadBtn').innerText = 'Load Payment Form';
+      }
+    }
+  </script>
+
+</body>
+</html>

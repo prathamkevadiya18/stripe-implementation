@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Success & Refund Portal</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #0a192f;
+      --accent: #d4af37;
+      --accent-hover: #b8952d;
+      --text-dark: #0f172a;
+      --text-light: #64748b;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --success-bg: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
+      --error: #ef4444;
+      --error-bg: #fef2f2;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-dark);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: 'Playfair Display', serif;
+      color: var(--primary);
+    }
+
+    .logo span {
+      color: var(--accent);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2rem;
+      margin-left: 0.2rem;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      box-sizing: border-box;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .grid {
+        grid-template-columns: 1.2fr 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02);
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Success Header Details */
+    .success-header {
+      text-align: center;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    .success-icon-wrap {
+      width: 72px;
+      height: 72px;
+      background-color: var(--success-bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      color: var(--success);
+      font-size: 2rem;
+      animation: scaleUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes scaleUp {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin: 0 0 0.5rem;
+    }
+
+    .success-msg {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* Details List */
+    .details-list {
+      list-style: none;
+      padding: 0;
+      margin: 1.5rem 0;
+    }
+
+    .details-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.95rem;
+    }
+
+    .details-item:last-child {
+      border-bottom: none;
+    }
+
+    .details-label {
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .details-value {
+      color: var(--text-dark);
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .details-value.code-val {
+      font-family: monospace;
+      background: #f1f5f9;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05rem;
+    }
+
+    .badge-success { background-color: var(--success-bg); color: var(--success); }
+    .badge-warning { background-color: var(--warning-bg); color: var(--warning); }
+    .badge-error { background-color: var(--error-bg); color: var(--error); }
+
+    /* Refund Action Card */
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--primary);
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-desc {
+      color: var(--text-light);
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+    }
+
+    /* Tabs for refund mode */
+    .tabs {
+      display: flex;
+      background: #f1f5f9;
+      padding: 0.3rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 0.6rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-light);
+      transition: var(--transition);
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: var(--primary);
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-prefix {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 0.8rem 1rem 0.8rem 2rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      box-sizing: border-box;
+      transition: var(--transition);
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    }
+
+    input:disabled {
+      background-color: #f8fafc;
+      color: var(--text-light);
+      cursor: not-allowed;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.9rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      gap: 0.5rem;
+    }
+
+    .btn:hover:not(:disabled) {
+      background-color: #172a45;
+      transform: translateY(-1px);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      background-color: #cbd5e1;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--primary);
+      margin-top: 1rem;
+    }
+
+    .btn-secondary:hover {
+      background-color: #f1f5f9;
+    }
+
+    /* Notification Alert Box */
+    .alert-box {
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      display: none;
+      line-height: 1.4;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert-success { background-color: var(--success-bg); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
+    .alert-error { background-color: var(--error-bg); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+    /* Refund History */
+    .refund-history-card {
+      grid-column: 1 / -1;
+    }
+
+    .refund-list {
+      margin-top: 1rem;
+    }
+
+    .refund-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      background-color: #f8fafc;
+      font-size: 0.9rem;
+    }
+
+    .refund-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .refund-id {
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    .refund-date {
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+
+    .refund-amount {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .no-refunds {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-light);
+      font-style: italic;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    /* Loader */
+    .spinner {
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 2px solid white;
+      width: 16px;
+      height: 16px;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    .spinner-dark {
+      border-top-color: var(--primary);
+      border-left-color: rgba(10, 25, 47, 0.2);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-light);
+      font-size: 0.8rem;
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="logo">Stripe<span>Embedded Checkout Host</span></div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="grid">
+      
+      <!-- Column 1: Payment Success Card -->
+      <div class="card">
+        <div class="success-header">
+          <div class="success-icon-wrap">✓</div>
+          <h1>Payment Successful</h1>
+          <p class="success-msg">Your transaction was processed successfully. Thank you for your order!</p>
+        </div>
+
+        <ul class="details-list">
+          <li class="details-item">
+            <span class="details-label">Amount Paid</span>
+            <span class="details-value" id="amount-paid">—</span>
+          </li>
+          <li class="details-item">
+            <span class="details-label">Status</span>
+            <span class="details-value" id="payment-status"><span class="badge badge-warning">Checking...</span></span>
+          </li>
+          <li class="details-item">
+            <span class="details-label" id="payment-ref-label">Payment Reference</span>
+            <span class="details-value code-val" id="checkout-session-id" title="Click to copy">—</span>
+          </li>
+          <li class="details-item">
+            <span class="details-label">Payment Intent ID</span>
+            <span class="details-value code-val" id="payment-intent-id" title="Click to copy">—</span>
+          </li>
+        </ul>
+
+        <a href="/" class="btn btn-secondary">← Back to Shop</a>
+      </div>
+
+      <!-- Column 2: Refund Request Card -->
+      <div class="card" id="refund-card">
+        <h2>Manage Refund</h2>
+        <p class="section-desc">Issue a full or partial refund for this payment directly to the customer's card.</p>
+
+        <!-- Alert Notification -->
+        <div class="alert-box" id="refund-alert"></div>
+
+        <div class="tabs">
+          <button class="tab-btn active" id="tab-full" onclick="setRefundMode('full')">Full Refund</button>
+          <button class="tab-btn" id="tab-partial" onclick="setRefundMode('partial')">Partial Refund</button>
+        </div>
+
+        <form id="refund-form" onsubmit="handleRefundSubmit(event)">
+          <div class="form-group">
+            <label for="refund-amount">Amount to Refund</label>
+            <div class="input-wrap">
+              <span class="input-prefix" id="currency-symbol">$</span>
+              <input type="number" id="refund-amount" step="0.01" min="0.01" disabled>
+            </div>
+            <small style="color: var(--text-light); margin-top: 0.4rem; display: block;" id="refund-limit-text">
+              Remaining refundable amount: <b id="remaining-refundable">—</b>
+            </small>
+          </div>
+
+          <button type="submit" class="btn" id="refund-submit-btn">
+            <span class="spinner" id="refund-spinner"></span>
+            <span id="refund-btn-text">Issue Refund</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Refund History (Full Width Below) -->
+      <div class="card refund-history-card">
+        <h2>Refund History</h2>
+        <p class="section-desc">Review previous refund logs and status details for this specific transaction.</p>
+        <div id="refunds-list-container">
+          <div class="no-refunds">Loading refund history...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <p>Powered by Stripe Embedded Checkout SDK & NestJS Backend</p>
+  </footer>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    const paymentIntentId = urlParams.get('payment_intent');
+
+    let currentSessionData = null;
+    let refundMode = 'full'; // 'full' or 'partial'
+    let remainingBalanceCents = 0;
+    let currency = 'usd';
+
+    const currencySymbols = {
+      usd: '$',
+      inr: '₹',
+      eur: '€',
+      gbp: '£',
+    };
+
+    // Helper to format currency
+    function formatCurrency(amountCents, currencyCode) {
+      const symbol = currencySymbols[currencyCode.toLowerCase()] || currencyCode.toUpperCase() + ' ';
+      return symbol + (amountCents / 100).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    // Get session/payment reference from URL and load details
+    const referenceId = sessionId || paymentIntentId;
+    const referenceLabel = sessionId ? 'Checkout Session ID' : 'Payment Intent ID';
+    if (referenceId) {
+      document.getElementById('payment-ref-label').innerText = referenceLabel;
+      document.getElementById('checkout-session-id').innerText = referenceId;
+      document.getElementById('checkout-session-id').setAttribute('title', referenceId);
+      fetchSessionDetails();
+    } else {
+      showGlobalError('No payment reference provided in the URL.');
+    }
+
+    function showGlobalError(msg) {
+      document.querySelector('.grid').innerHTML = `
+        <div class="card" style="grid-column: 1/-1; text-align: center; padding: 3rem 2rem;">
+          <div class="success-icon-wrap" style="background-color: var(--error-bg); color: var(--error);">!</div>
+          <h1 style="color: var(--error);">Error Loading Payment</h1>
+          <p class="success-msg">${msg}</p>
+          <a href="/" class="btn btn-secondary" style="max-width: 200px; margin: 1.5rem auto 0;">Back to Shop</a>
+        </div>
+      `;
+    }
+
+    async function fetchSessionDetails() {
+      try {
+        const endpoint = sessionId
+          ? `http://localhost:3000/payment/session/${sessionId}`
+          : `http://localhost:3000/payment/intent/${paymentIntentId}`;
+        const res = await fetch(endpoint);
+        if (!res.ok) {
+          throw new Error('Could not retrieve payment details from backend.');
+        }
+        const data = await res.json();
+        currentSessionData = data;
+        currency = data.currency || 'usd';
+
+        // Update elements
+        document.getElementById('currency-symbol').innerText = currencySymbols[currency.toLowerCase()] || '$';
+        document.getElementById('amount-paid').innerText = formatCurrency(data.amountTotal, currency);
+        
+        // Status Badge
+        const statusEl = document.getElementById('payment-status');
+        if (data.paymentStatus === 'paid') {
+          statusEl.innerHTML = '<span class="badge badge-success">Paid</span>';
+        } else {
+          statusEl.innerHTML = `<span class="badge badge-warning">${data.paymentStatus || data.status}</span>`;
+        }
+
+        // Payment Intent
+        const piEl = document.getElementById('payment-intent-id');
+        if (data.paymentIntentId) {
+          piEl.innerText = data.paymentIntentId;
+          piEl.setAttribute('title', data.paymentIntentId);
+        } else {
+          piEl.innerText = 'Not Available';
+        }
+
+        // Calculate remaining balance
+        const totalRefundedCents = data.refunds.reduce((sum, ref) => {
+          if (ref.status === 'succeeded') {
+            return sum + ref.amount;
+          }
+          return sum;
+        }, 0);
+
+        remainingBalanceCents = Math.max(0, data.amountTotal - totalRefundedCents);
+
+        document.getElementById('remaining-refundable').innerText = formatCurrency(remainingBalanceCents, currency);
+
+        // Update Refund Card availability
+        const refundSubmitBtn = document.getElementById('refund-submit-btn');
+        const refundAmountInput = document.getElementById('refund-amount');
+        
+        if (remainingBalanceCents <= 0) {
+          refundSubmitBtn.disabled = true;
+          refundAmountInput.disabled = true;
+          document.getElementById('refund-btn-text').innerText = 'Fully Refunded';
+          showAlert('success', 'This transaction has been fully refunded.');
+        } else {
+          refundSubmitBtn.disabled = false;
+          document.getElementById('refund-btn-text').innerText = 'Issue Refund';
+          // Set default value if full refund mode is active
+          if (refundMode === 'full') {
+            refundAmountInput.value = (remainingBalanceCents / 100).toFixed(2);
+          }
+        }
+
+        // Render Refunds List
+        renderRefundsList(data.refunds);
+
+      } catch (err) {
+        console.error(err);
+        showGlobalError(err.message);
+      }
+    }
+
+    function renderRefundsList(refunds) {
+      const container = document.getElementById('refunds-list-container');
+      if (!refunds || refunds.length === 0) {
+        container.innerHTML = `<div class="no-refunds">No refunds issued yet for this payment.</div>`;
+        return;
+      }
+
+      let html = '<div class="refund-list">';
+      refunds.forEach(ref => {
+        const dateStr = new Date(ref.createdAt * 1000).toLocaleString();
+        const badgeClass = ref.status === 'succeeded' ? 'badge-success' : 'badge-warning';
+        html += `
+          <div class="refund-item">
+            <div class="refund-left">
+              <span class="refund-id">${ref.id}</span>
+              <span class="refund-date">Created on ${dateStr}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <span class="badge ${badgeClass}">${ref.status}</span>
+              <span class="refund-amount">${formatCurrency(ref.amount, ref.currency)}</span>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function setRefundMode(mode) {
+      refundMode = mode;
+      
+      const tabFull = document.getElementById('tab-full');
+      const tabPartial = document.getElementById('tab-partial');
+      const refundAmountInput = document.getElementById('refund-amount');
+
+      if (mode === 'full') {
+        tabFull.classList.add('active');
+        tabPartial.classList.remove('active');
+        refundAmountInput.disabled = true;
+        
+        // Auto-fill full remaining balance
+        if (remainingBalanceCents > 0) {
+          refundAmountInput.value = (remainingBalanceCents / 100).toFixed(2);
+        }
+      } else {
+        tabFull.classList.remove('active');
+        tabPartial.classList.add('active');
+        refundAmountInput.disabled = false;
+        refundAmountInput.value = '';
+        refundAmountInput.focus();
+      }
+    }
+
+    function showAlert(type, text) {
+      const alertBox = document.getElementById('refund-alert');
+      alertBox.className = `alert-box alert-${type}`;
+      alertBox.innerText = text;
+      alertBox.style.display = 'block';
+    }
+
+    function hideAlert() {
+      const alertBox = document.getElementById('refund-alert');
+      alertBox.style.display = 'none';
+    }
+
+    // Handle Form Submit
+    async function handleRefundSubmit(event) {
+      event.preventDefault();
+      
+      const amountInput = document.getElementById('refund-amount');
+      const refundVal = parseFloat(amountInput.value);
+
+      if (isNaN(refundVal) || refundVal <= 0) {
+        showAlert('error', 'Please enter a valid refund amount greater than 0.');
+        return;
+      }
+
+      const refundAmountCents = Math.round(refundVal * 100);
+
+      if (refundAmountCents > remainingBalanceCents) {
+        showAlert('error', `Refund amount exceeds the remaining refundable balance of ${formatCurrency(remainingBalanceCents, currency)}.`);
+        return;
+      }
+
+      // UI Loading States
+      const submitBtn = document.getElementById('refund-submit-btn');
+      const spinner = document.getElementById('refund-spinner');
+      const btnText = document.getElementById('refund-btn-text');
+
+      submitBtn.disabled = true;
+      spinner.style.display = 'inline-block';
+      btnText.innerText = 'Processing...';
+      hideAlert();
+
+      try {
+        const payload = {
+          amount: refundAmountCents
+        };
+
+        if (sessionId) {
+          payload.sessionId = sessionId;
+        }
+
+        if (paymentIntentId) {
+          payload.paymentIntentId = paymentIntentId;
+        }
+
+        const res = await fetch('http://localhost:3000/payment/refund', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || 'Error occurred while issuing refund.');
+        }
+
+        showAlert('success', `Refund of ${formatCurrency(data.amount, data.currency)} was successfully issued.`);
+        
+        // Refresh session status and refund history
+        await fetchSessionDetails();
+
+      } catch (err) {
+        console.error(err);
+        showAlert('error', err.message || 'Failed to complete refund.');
+        submitBtn.disabled = false;
+      } finally {
+        spinner.style.display = 'none';
+        btnText.innerText = remainingBalanceCents <= 0 ? 'Fully Refunded' : 'Issue Refund';
+      }
+    }
+
+    // Click to copy handlers
+    function registerCopyHandler(elementId) {
+      const el = document.getElementById(elementId);
+      el.addEventListener('click', () => {
+        const text = el.innerText;
+        if (text && text !== '—' && text !== 'Not Available') {
+          navigator.clipboard.writeText(text).then(() => {
+            const originalText = el.innerText;
+            el.innerText = 'Copied!';
+            setTimeout(() => {
+              el.innerText = originalText;
+            }, 1000);
+          }).catch(err => console.error('Failed to copy', err));
+        }
+      });
+    }
+
+    registerCopyHandler('checkout-session-id');
+    registerCopyHandler('payment-intent-id');
+  </script>
+</body>
+</html>

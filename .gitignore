@@ -1,0 +1,27 @@
+# Node dependencies
+node_modules/
+
+# NestJS build output
+dist/
+backend/dist/
+
+# Local configuration files (contains private API keys)
+.env
+backend/.env
+
+# Local JSON database storage
+orders.json
+backend/orders.json
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Operating System files
+.DS_Store
+Thumbs.db
