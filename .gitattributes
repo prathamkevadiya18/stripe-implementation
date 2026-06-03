@@ -1,0 +1,2 @@
+# Exclude frontend HTML/CSS/JS files from GitHub language statistics
+frontend/** linguist-vendored
