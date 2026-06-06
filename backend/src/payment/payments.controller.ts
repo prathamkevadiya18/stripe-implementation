@@ -1,5 +1,5 @@
 import { Controller, Post, Body, BadRequestException, Get, Param, Headers, Req } from '@nestjs/common';
-import { WebsitePaymentsService } from './website-payments.service.js';
+import { WebsitePaymentsService } from './payments.service.js';
 import type { RawBodyRequest } from '@nestjs/common';
 import type { Request } from 'express';
 

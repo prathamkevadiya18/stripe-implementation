@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { WebsitePaymentsController } from './website-payments.controller.js';
-import { WebsitePaymentsService } from './website-payments.service.js';
+import { WebsitePaymentsController } from './payments.controller.js';
+import { WebsitePaymentsService } from './payments.service.js';
 import { StripeModule } from '../common/stripe/stripe.module.js';
 import { OrdersModule } from '../orders/orders.module.js';
 
