@@ -18,7 +18,7 @@ export class WebsitePaymentsController {
   }
 
   @Post('webhook')
-  async handleWebhook( @Req() req: RawBodyRequest<Request>, @Headers('stripe-signature') signature: string,) {
+  async handleWebhook(@Req() req: RawBodyRequest<Request>, @Headers('stripe-signature') signature: string,) {
     if (!req.rawBody) {
       throw new BadRequestException('Missing raw body');
     }

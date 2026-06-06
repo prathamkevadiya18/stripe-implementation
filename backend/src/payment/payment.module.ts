@@ -10,4 +10,4 @@ import { OrdersModule } from '../orders/orders.module.js';
   controllers: [WebsitePaymentsController],
   providers: [WebsitePaymentsService],
 })
-export class PaymentModule {}
+export class PaymentModule { }
